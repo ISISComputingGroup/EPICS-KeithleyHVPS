@@ -1,0 +1,129 @@
+##################################################
+#
+# Protocol File
+#
+# Protocol file for Keithley 2290
+# ISIS, November 2022
+#
+# NOTES:
+#
+# 
+#
+##################################################
+
+
+##################################################
+# General Settings
+##################################################
+
+ReplyTimeout = 1000;
+
+
+###################################################
+# Get functions
+###################################################
+
+# /// Read the device ID (only displays 39 chars)
+getID {
+   ExtraInput = Ignore;
+   out "*IDN?";
+   in "%39c";
+}
+
+# Returns the actual output voltage (V).
+# The value returned is a floating-point number and includes the + sign of the output voltage.
+get_V {
+   ExtraInput = Ignore;
+   out "VOUT?";
+   in "%g;
+}
+
+get_V_limit {
+   ExtraInput = Ignore;
+   out "VLIM?";
+   in "%g;
+}
+
+# Returns the value of the actual output current (uA)
+get_I {
+   ExtraInput = Ignore;
+   out "IOUT?";
+   in "%g";
+}
+
+# Returns the value of the current limit as a floating-point value (A)
+get_I_limit {
+   ExtraInput = Ignore;
+   out "ILIM?";
+   in "%g";
+}
+
+# Returns the value of the current trip as a floating-point value (A)
+get_I_trip {
+   ExtraInput = Ignore;
+   out "ILIM?";
+   in "%g";
+}
+
+# Returns the value of manual trip reset, 0 means manual and 1 means automatic
+get_trip_reset_mode {
+   ExtraInput = Ignore;
+   out "TMOD?";
+   in "%i";
+}
+
+get_error {
+   ExtraInput = Ignore;
+   out "LERR?"
+   in "%d"
+}
+
+#######################################################
+# Set functions
+#######################################################
+
+# /// Reset the defaults
+set_RESET {
+   out "*RST";
+}
+
+set_clear_trip {
+   out "TCLR";
+}
+
+set_V {
+   out "VOUT %g"
+}
+
+set_V_limit {
+   out "VLIM %g"
+}
+
+set_I_limit {
+   out "ILIM %g"
+}
+
+set_I_trip {
+   out "ITRP %g"
+}
+
+set_HV_ON {
+   out %{HVOF|HVON}
+}
+
+# Sets the value of manual trip reset, 0 means manual and 1 means the trip reset mode is automatic
+set_trip_reset_mode {
+   ExtraInput = Ignore;
+   out "TMOD %i";
+}
+
+#############################################################
+# Generic protocol
+############################################################
+
+# /// Use this send any command and get back the response (max 60 chars).
+gen {
+    ExtraInput = Ignore;
+    out "%(\$1.VAL)s"; 
+    in "%60c"
+}

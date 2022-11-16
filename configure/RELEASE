@@ -1,0 +1,11 @@
+# START OF AUTO GENERATED DEPENDENCIES
+ASYN=$(SUPPORT)/asyn/master
+STREAM=$(SUPPORT)/StreamDevice/master
+# END OF AUTO GENERATED DEPENDENCIES
+
+# optional extra local definitions here
+-include $(TOP)/configure/RELEASE.private
+
+include $(TOP)/../../../ISIS_CONFIG
+-include $(TOP)/../../../ISIS_CONFIG.$(EPICS_HOST_ARCH)
+GTEST=$(SUPPORT)/googletest/master
