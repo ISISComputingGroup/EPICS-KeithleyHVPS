@@ -27,7 +27,7 @@ asynSetTraceFile("L0",-1,"")
 asynSetTraceIOMask("L0",-1,0x2) 
 
 ## Load record instances
-dbLoadRecords("db/devKeithley2290.vdb","P=keithley,R=2290:,L=0,A=-1")
+dbLoadRecords("db/devKeithley2290.db","P=keithley,R=2290:,L=0,A=-1")
 dbLoadRecords("db/asynRecord.db","P=keithley,R=2290,PORT=L0,ADDR=-1,OMAX=0,IMAX=0")
 
 cd ${TOP}/iocBoot/${IOC}
