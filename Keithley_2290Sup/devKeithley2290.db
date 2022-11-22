@@ -2,80 +2,136 @@
 # ISIS, November 2022
 # Author : P.J. L. Heesterman (Capgemini Engineering)
 
+
+record(bo, "$(P)SIM")
+{
+    field(DTYP, "Soft Channel")
+    field(ZNAM, "NO")
+    field(ONAM, "YES")
+    field(VAL, "$(RECSIM=0)")
+}
+
+record(bo, "$(P)DISABLE")
+{
+    field(DESC, "Disable comms")
+    field(PINI, "YES")
+    field(VAL, "$(DISABLE=0)")
+    field(OMSL, "supervisory")
+    field(ZNAM, "COMMS ENABLED")
+    field(ONAM, "COMMS DISABLED")
+}
+
+record(stringin, "$(P)SIM:IDN")
+{
+    field(DTYP, "Soft Channel")
+}
+
 ###################################################
 # Get functions
 ###################################################
 
 # Read the device ID (only displays 39 chars)
-record(stringin, "$(P):IDN") {
-  field(DESC, "SCPI identification string")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_IDN $(P)")
-  field(PINI, "YES")
+record(stringin, "$(P)IDN")
+{
+    field(DESC, "SCPI identification string")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_IDN $(PORT)")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:IDN")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Read the current output voltage
-record(ai, "$(P):VOLTAGE" {
-  field(DESC, "Actual output voltage")
-  filed(EGU,  "V")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_V $(P)")
-  field(SCAN, "5 second")
-  field(PINI, "YES")
+record(ai, "$(P)VOLT")
+{
+    field(DESC, "Actual output voltage")
+    field(EGU,  "V")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_volt $(PORT)")
+    field(SCAN, "5 second")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:VOLT")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Read the output voltage limit
-record(ai, "$(P):VOLTAGE_LIMIT" {
-  field(DESC, "Output voltage limit")
-  filed(EGU,  "V")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_V_limit $(P)")
-  field(PINI, "YES")
+record(ai, "$(P)VOLT_LIMIT")
+{
+    field(DESC, "Output voltage limit")
+    field(EGU,  "V")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_volt_limit $(PORT)")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:VOLT_LIMIT")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Read the output current
-record(ai, "$(P):CURRENT" {
-  field(DESC, "Output current")
-  field(EGU,  "uA")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_I $(P)")
-  field(SCAN, "5 second")
-  field(PINI, "YES")
+record(ai, "$(P)CURR")
+{
+    field(DESC, "Output current")
+    field(EGU,  "uA")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_curr $(PORT)")
+    field(SCAN, "5 second")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CURR")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Read the output current limit
-record(ai, "$(P):CURRENT_LIMIT" {
-  field(DESC, "Output current limit")
-  field(EGU,  "uA")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_I_limit $(P)")
-  field(PINI, "YES")
+record(ai, "$(P)CURR_LIMIT") 
+{
+    field(DESC, "Output current limit")
+    field(EGU,  "uA")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_curr_limit $(PORT)")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CURRENT_LIMIT")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Read the output current trip
-record(ai, "$(P):CURRENT_TRIP" {
-  field(DESC, "Output current trip")
-  field(EGU,  "uA")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_I_trip $(P)")
-  field(PINI, "YES")
+record(ai, "$(P)CURR_TRIP")
+{
+    field(DESC, "Output current trip")
+    field(EGU,  "uA")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_curr_trip $(PORT)")
+    field(PINI, "YES")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CURRENT_TRIP")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Returns the value of manual trip reset, 0 means manual and 1 means automatic
-record(bi, "$(P):TRIP_RESET_MODE" {
-  field(DESC, "Trip Reset Mode")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_trip_reset_mode $(P)")
-  field(ZNAM, "Manual")
-  field(ONAM, "Automatic")
+record(bi, "$(P)TRIP_RESET_MODE")
+{
+    field(DESC, "Trip Reset Mode")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_trip_reset_mode $(PORT)")
+    field(ZNAM, "Manual")
+    field(ONAM, "Automatic")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:TRIP_RESET_MODE")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Returns the error status
-record(longin, "$(P):ERROR" {
-  field(DESC, "Error status")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_error_status $(P)")
-  field(HIHI, "1.0")
+record(longin, "$(P)ERROR")
+{
+    field(DESC, "Error status")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_error_status $(PORT)")
+    field(HIHI, "1")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:ERROR")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Returns the status byte
@@ -87,12 +143,22 @@ record(longin, "$(P):ERROR" {
 # Bit 5 - ESB     - Indicates that an unmasked bit in the Standard Event Status Register has been set.
 # Bit 6 - RQS/MSS - Request for Service/Master Summary Status.
 # Bit 7 - HV on   - Indicates that the high voltage is on.
-record(mbbidirect, "$(P):STATUS" {
-  field(DESC, "Status byte")
-  field(DTYP, "stream")
-  field(INP,  "@devKeithley_2290.proto get_status_byte $(P)")
-  field(SCAN, "5 second")
-  field(PINI, "YES")
+record(mbbiDirect, "$(P)STATUS")
+{
+    field(DESC, "Status byte")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_status_byte $(PORT)")
+    field(SCAN, "5 second")
+    field(PINI, "YES")
+}
+
+# Get the HV ON or OFF state
+record(bi, "$(P)VOLT_ON")
+{
+    field(DESC, "HV ON or OFF")
+    field(ZNAM, "OFF")
+    field(ONAM, "ON")
+    field(INP,  "$(P)STATUS.B7 CP MS")
 }
 
 #######################################################
@@ -100,27 +166,39 @@ record(mbbidirect, "$(P):STATUS" {
 #######################################################
 
 # Reset to defaults
-record(bo, "$(P):RST") {
-  field(DESC, "SCPI reset")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto reset $(P)")
-  field(HIGH, "0.0")
+record(bo, "$(P)RST")
+{
+    field(DESC, "SCPI reset")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto reset $(PORT)")
+    field(HIGH, "0")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:RST")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Clear status
-record(bo, "$(P):CLS") {
-  field(DESC, "SCPI Clear status")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto clear_status")
-  field(HIGH, "0.0")
+record(bo, "$(P)CLS")
+{
+    field(DESC, "SCPI Clear status")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto clear_status $(PORT)")
+    field(HIGH, "0")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CLS")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Clear trip
-record(bo, "$(P):CLT") {
-  field(DESC, "SCPI Clear trip")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto clear_trip")
-  field(HIGH, "0.0")
+record(bo, "$(P)CLT")
+{
+    field(DESC, "SCPI Clear trip")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto clear_trip $(PORT)")
+    field(HIGH, "0")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CLT")
+    field(SDIS, "$(P)DISABLE")
 }
 
 #######################################################
@@ -128,42 +206,132 @@ record(bo, "$(P):CLT") {
 #######################################################
 
 # Set the requested output voltage
-record(ao, "$(P):VOLTAGE:SP" {
-  field(DESC, "Requested output voltage")
-  filed(EGU,  "V")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto set_V $(P)")
+record(ao, "$(P)VOLT:SP")
+{
+    field(DESC, "Requested output voltage")
+    field(EGU,  "V")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto set_volt $(PORT)")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:VOLT:SP")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Set the output voltage limit
-record(ao, "$(P):VOLTAGE_LIMIT:SP" {
-  field(DESC, "Output voltage limit")
-  filed(EGU,  "V")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto set_V_limit $(P)")
+record(ao, "$(P)VOLT_LIMIT:SP") {
+    field(DESC, "Output voltage limit")
+    field(EGU,  "V")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto set_volt_limit $(PORT)")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:VOLT_LIMIT:SP")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Set the output current limit
-record(ao, "$(P):CURRENT_LIMIT:SP" {
-  field(DESC, "Output current limit")
-  field(EGU,  "uA")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto set_I_limit $(P)")
+record(ao, "$(P)CURR_LIMIT:SP")
+{
+    field(DESC, "Output current limit")
+    field(EGU,  "uA")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto set_curr_limit $(PORT)")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CURRENT_LIMIT:SP")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Set the output current trip
-record(ao, "$(P):CURRENT_TRIP:SP" {
-  field(DESC, "Output current trip")
-  field(EGU,  "uA")
-  field(DTYP, "stream")
-  field(OUT,  "@devKeithley_2290.proto set_I_trip $(P)")
+record(ao, "$(P)CURR_TRIP:SP")
+{
+    field(DESC, "Output current trip")
+    field(EGU,  "uA")
+    field(DTYP, "stream")
+    field(OUT,  "@devKeithley2290.proto set_curr_trip $(PORT)")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:CURRENT_TRIP:SP")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Set the HV ON or OFF
-record(bo, "$(P):HV_ON" {
-  field(DESC, "HV ON or OFF")
-  field(DTYP, "stream")
-  field(ZNAM, "OFF")
-  field(ONAM, "ON")
-  field(OUT,  "@devKeithley_2290.proto set_HV_ON $(P)")
+record(bo, "$(P)VOLT_ON:SP")
+{
+    field(DESC, "HV ON or OFF")
+    field(DTYP, "stream")
+    field(ZNAM, "OFF")
+    field(ONAM, "ON")
+    field(OUT,  "@devKeithley2290.proto set_volt_ON $(PORT)")
+    field(SIML, "$(P)SIM")
+    field(SIOL, "$(P)SIM:VOLT_ON:SP")
+    field(SDIS, "$(P)DISABLE")
 }
+
+### SIMULATION RECORDS ###
+
+record(bo,"$(P)SIM:CLS")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(bo,"$(P)SIM:CLT")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(ai,"$(P)SIM:CURRENT")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(ai,"$(P)SIM:CURRENT_LIMIT")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+alias("$(P)SIM:CURRENT_LIMIT","$(P)SIM:CURRENT_LIMIT:SP")
+
+record(ai,"$(P)SIM:CURRENT_TRIP")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+alias("$(P)SIM:CURRENT_TRIP","$(P)SIM:CURRENT_TRIP:SP")
+
+record(longin,"$(P)SIM:ERROR")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(bo,"$(P)SIM:RST")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(bi,"$(P)SIM:TRIP_RESET_MODE")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+record(ai,"$(P)SIM:VOLT")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+alias("$(P)SIM:VOLT","$(P)SIM:VOLT:SP")
+
+record(ai,"$(P)SIM:VOLT_LIMIT")
+{
+    field(SCAN, "Passive")
+    field(DTYP, "Soft Channel")
+}
+
+alias("$(P)SIM:VOLT_LIMIT","$(P)SIM:VOLT_LIMIT:SP")
+
