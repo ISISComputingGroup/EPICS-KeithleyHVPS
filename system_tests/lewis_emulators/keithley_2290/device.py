@@ -22,14 +22,33 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._volt = 0.0
         self._volt_limit = 10000.0
         self._curr = 0.0
+        self._curr_limit = 1.05E-6
+        self._curr_trip = 1.05E-6
         self._trip_reset_mode = 0
-        self._trip = 0
-        self._stat_byte = 0
+        # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
+        # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
+        # Bit 2 - I trip  - Indicates that a current trip has occurred.
+        # Bit 3 - I lim   - Indicates that a current limit condition has occurred.
+        # Bit 4 - MAV     - Indicates message available in the GPIB output queue.
+        # Bit 5 - ESB     - Indicates that an unmasked bit in the Standard Event Status Register has been set.
+        # Bit 6 - RQS/MSS - Request for Service/Master Summary Status.
+        # Bit 7 - HV on   - Indicates that the high voltage is on.
+        self._stat_byte = 1
         self._error = 0
+        
+    def reset(self):
+        self._initialize_data()
+        
+    def clear_status(self):
+        self._stat_byte = 1
         
     @property
     def idn(self):
         return self._idn
+        
+    @property
+    def error(self):
+        return self._error
         
     @property
     def volt(self):
@@ -38,16 +57,21 @@ class SimulatedKeithley2290(StateMachineDevice):
     @volt.setter
     def volt(self, new_volt):
         if new_volt > self.volt_limit:
-            new_volt = self.volt_limit
-        self._volt = new_volt
+            self._volt = self.volt_limit
+        else:
+            self._volt = new_volt
         
     @property
     def volt_ON(self):
-        return (self._status_byte >> 7) & 1
+        return (self._stat_byte >> 7) & 1
         
     @volt_ON.setter
     def volt_ON(self, new_volt_ON):
-        self._status_byte |= new_volt_ON
+        if new_volt_ON:
+            self._stat_byte |= (1 << 7)
+        else:
+            self._stat_byte &= ~(1 << 7)
+        print("Status byte set to ", self._stat_byte)
         
     @property
     def volt_limit(self):
@@ -56,14 +80,60 @@ class SimulatedKeithley2290(StateMachineDevice):
     @volt_limit.setter
     def volt_limit(self, new_volt_limit):
         self._volt_limit = new_volt_limit
+        if self._volt > self._volt_limit:
+            self._volt = self._volt_limit
+        print("Volt limit set to ", self._volt_limit)
     
     @property
     def curr(self):
-        return self._curr
+        if (self._stat_byte & (1 << 3)) != 0:
+            return self._curr_limit
+        else:
+            return self._curr
     
     @curr.setter
     def curr(self, new_curr):
+        if new_curr > self._curr_trip:
+            new_curr = 0
+            self._stat_byte |= (1 << 2)
+            print("Current is beyond trip")
+        else:
+            self._stat_byte &= ~(1 << 2)
+            
         self._curr = new_curr
+        if new_curr > self._curr_limit:
+            self._stat_byte |= (1 << 3)
+        else:
+            self._stat_byte &= ~(1 << 3)
+        print("Current set to ", self._curr)
+        
+    @property
+    def curr_trip(self):
+        return self._curr_trip
+        
+    @curr_trip.setter
+    def curr_trip(self, new_curr_trip):
+        self._curr_trip = new_curr_trip
+        if self._curr > self._curr_trip:
+            self._curr = 0
+            self._stat_byte |= (1 << 2)
+        else:
+            self._stat_byte &= ~(1 << 2)
+        print("Current trip set to ", self._curr_trip)
+        
+        
+    @property
+    def curr_limit(self):
+        return self._curr_limit
+        
+    @curr_limit.setter
+    def curr_limit(self, new_curr_limit):
+        self._curr_limit = new_curr_limit
+        if self._curr > self._curr_limit:
+            self._stat_byte |= (1 << 3)
+        else:
+            self._stat_byte &= ~(1 << 3)
+        print("Current limit set to ", self._curr_trip)
         
     @property
     def trip_reset_mode(self):
@@ -76,7 +146,7 @@ class SimulatedKeithley2290(StateMachineDevice):
     @property
     def stat_byte(self):
         return self._stat_byte
-        
+
     @property
     def trip(self):
         return (self._stat_byte & 6) != 0
@@ -87,7 +157,7 @@ class SimulatedKeithley2290(StateMachineDevice):
             self._stat_byte |= 6
         else:
             self._stat_byte &= ~6
-    
+        print("Trip set to ", self._stat_byte)
 
     def _get_state_handlers(self):
         """

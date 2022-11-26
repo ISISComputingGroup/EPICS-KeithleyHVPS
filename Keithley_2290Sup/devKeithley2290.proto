@@ -34,35 +34,35 @@ get_IDN {
 
 # Returns the actual output voltage (V).
 # The value returned is a floating-point number and includes the + sign of the output voltage.
-get_Voltage {
+get_volt {
     ExtraInput = Ignore;
     out "VOUT?";
     in "%g";
 }
 
 # Returns the output voltage limit (V)
-get_Voltage_limit {
+get_volt_limit {
     ExtraInput = Ignore;
     out "VLIM?";
     in "%g";
 }
 
 # Returns the value of the actual output current (uA)
-get_Current {
+get_curr {
     ExtraInput = Ignore;
     out "IOUT?";
     in "%g";
 }
 
 # Returns the value of the current limit as a floating-point value (uA)
-get_Current_limit {
+get_curr_limit {
     ExtraInput = Ignore;
     out "ILIM?";
     in "%g";
 }
 
 # Returns the value of the current trip as a floating-point value (uA)
-get_Current_trip {
+get_curr_trip {
     ExtraInput = Ignore;
     out "ITRP?";
     in "%g";
@@ -119,23 +119,23 @@ clear_trip {
 # Set functions
 #######################################################
 
-set_Voltage {
-    out "VOUT %g";
+set_volt {
+    out "VSET %g";
 }
 
-set_Voltage_limit {
+set_volt_limit {
     out "VLIM %g";
 }
 
-set_Current_limit {
+set_curr_limit {
     out "ILIM %g";
 }
 
-set_Current_trip {
+set_curr_trip {
     out "ITRP %g";
 }
 
-set_Voltage_ON {
+set_volt_ON {
     out "%{HVOF|HVON}";
 }
 

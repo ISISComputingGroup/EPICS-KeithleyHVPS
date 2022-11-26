@@ -11,19 +11,17 @@ include $(TOP)/configure/CONFIG
 PROD_IOC = Keithley2290Test
 
 # Keithley2290Test.dbd will be made up from these files:
-Keithley2290Test_DBD += base.dbd
-#include definitions for any other support applications needed
 Keithley2290Test_DBD += devKeithley2290.dbd
-Keithley2290Test_DBD += drvAsynSerialPort.dbd
-Keithley2290Test_DBD += asynRecord.dbd
+
+DBD += Keithley2290Test.dbd
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 Keithley2290Test_SRCS += Keithley2290Test_registerRecordDeviceDriver.cpp
 Keithley2290Test_SRCS_DEFAULT += Keithley2290TestMain.cpp
 
 #add a definition for each support application used by this application
-#Keithley2290Test_LIBS += devKeithley2290 asyn
-Keithley2290Test_LIBS += asyn
+#Keithley2290Test_LIBS += devKeithley2290
+Keithley2290Test_LIBS += asyn stream calc
 
 
 #NOTES:

@@ -9,10 +9,6 @@ LIBRARY_IOC += Keithley2290
 DATA += devKeithley2290.proto
 DBD += devKeithley2290.dbd
 
-# aSub record
-Keithley2290_DBD += stream.dbd
-Keithley2290_DBD += drvAsynSerialPort.dbd
-
 DB += devKeithley2290.db
 
 Keithley2290_LIBS += asyn stream

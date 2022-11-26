@@ -1,6 +1,9 @@
 # START OF AUTO GENERATED DEPENDENCIES
 ASYN=$(SUPPORT)/asyn/master
 STREAM=$(SUPPORT)/StreamDevice/master
+CALC=$(SUPPORT)/calc/master
+SSCAN=$(SUPPORT)/sscan/master
+PCRE=$(SUPPORT)/pcre/master
 # END OF AUTO GENERATED DEPENDENCIES
 
 # optional extra local definitions here

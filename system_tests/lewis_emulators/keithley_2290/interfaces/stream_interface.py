@@ -21,20 +21,22 @@ class Keithley2290StreamInterface(StreamInterface):
         CmdBuilder("get_volt_limit").escape("VLIM?").eos().build(),
         CmdBuilder("get_curr").escape("IOUT?").eos().build(),
         CmdBuilder("get_curr_trip").escape("ITRP?").eos().build(),
+        CmdBuilder("get_curr_limit").escape("ILIM?").eos().build(),
         CmdBuilder("get_setting_mode").escape("SMOD?").eos().build(),
         CmdBuilder("get_trip_reset_mode").escape("TMOD?").eos().build(),
         CmdBuilder("get_stat_byte").escape("*STB?").eos().build(),
         # Error handling
         CmdBuilder("reset").escape("*RST").build(),
+        CmdBuilder("clear_status").escape("*CLS").build(),
         CmdBuilder("get_error").escape("LERR?").eos().build(),
-        CmdBuilder("clear_trip").escape("TCLR").build(),
+        CmdBuilder("clear_trip").escape("TCLR").eos().build(),
         # Setting values
-        CmdBuilder("set_volt_ON").escape("HVON").int().build(),
+        CmdBuilder("set_volt_ON").escape("HV").arg("OF|ON").eos().build(),
         CmdBuilder("set_trip_reset_mode").escape("TMOD ").int().build(),
-        CmdBuilder("set_volt").escape("VSET").float().eos().build(),
-        CmdBuilder("set_volt_limit").escape("VLIM").float().eos().build(),
-        CmdBuilder("set_curr_limit").escape("ILIM").float().eos().build(),
-        CmdBuilder("set_curr_trip").escape("ITRP").float().eos().build(),
+        CmdBuilder("set_volt").escape("VSET ").float().eos().build(),
+        CmdBuilder("set_volt_limit").escape("VLIM ").float().eos().build(),
+        CmdBuilder("set_curr_limit").escape("ILIM ").float().escape("e").int().eos().build(),
+        CmdBuilder("set_curr_trip").escape("ITRP ").float().escape("e").int().eos().build(),
     }
 
     in_terminator = "\n"
@@ -46,6 +48,9 @@ class Keithley2290StreamInterface(StreamInterface):
         """
         self._device.reset()
         return "*RST"
+        
+    def clear_status(self):
+        self._device.clear_status()
     
     def get_error(self):
         return self._device.error
@@ -62,11 +67,10 @@ class Keithley2290StreamInterface(StreamInterface):
     def get_setting_mode(self):
         return self._device.setting_mode
 
-    def get_volt_ON(self):
-        return self._device.volt_ON
-
     def set_volt_ON(self, value):
-        self._device.volt_ON = value
+        volt_ON = 0
+        if value == "ON": volt_ON = 1
+        self._device.volt_ON = volt_ON
 
     def set_volt(self, value):
         self._device.volt = value
@@ -88,14 +92,14 @@ class Keithley2290StreamInterface(StreamInterface):
     def get_curr_limit(self):
         return self._device.curr_limit
 
-    def set_curr_limit(self, value):
-        self._device.curr_limit = value
+    def set_curr_limit(self, value, exponent):
+        self._device.curr_limit = value * 10**exponent
         
     def get_curr_trip(self):
         return self._device.curr_trip
 
-    def set_curr_trip(self, value):
-        self._device.curr_trip = value
+    def set_curr_trip(self, value, exponent):
+        self._device.curr_trip = value * 10**exponent
         
     def set_trip_reset_mode(self, new_mode):
         self._device.trip_reset_mode = new_mode
