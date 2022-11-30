@@ -201,6 +201,16 @@ record(bi, "$(P)CURR_LIMITED")
     field(INP,  "$(P)STATUS.B3 CP MS")
 }
 
+# Get the value of the Standard Event Status Register alert
+record(bi, "$(P)ESB")
+{
+    field(DESC, "Event Status Register alert")
+    field(ZNAM, "OK")
+    field(ONAM, "ALERT")
+    field(OSV,  "MINOR")
+    field(INP,  "$(P)STATUS.B5 CP MS")
+}
+
 # Get the HV ON or OFF state
 record(bi, "$(P)VOLT_ON")
 {
@@ -213,6 +223,27 @@ record(bi, "$(P)VOLT_ON")
     field(SDIS, "$(P)DISABLE")
 }
 
+record(calcout, "$(P)ESB_EVENT")
+{
+    field(INPA, "$(P)ESB CP MS")
+    field(CALC, "A")
+    field(OEVT, "16") # same number as the enabled status register value
+    field(OOPT, "Transition To Non-zero")
+    field(ODLY, "0")
+    field(DOPT, "Use CALC")
+}
+
+record(bi, "$(P)EXECUTION_ERROR")
+{
+    field(DESC, "Execution error")
+    field(DTYP, "stream")
+    field(INP,  "@devKeithley2290.proto get_execution_error $(PORT)")
+    field(ZNAM, "OK")
+    field(ONAM, "ERROR")
+    field(OSV,  "MAJOR")
+    field(SCAN, "Event")
+    field(EVNT, "16")
+}
 
 #######################################################
 # Operations
@@ -329,6 +360,24 @@ record(bo, "$(P)VOLT_ON:SP")
     field(SIML, "$(P)SIM")
     field(SIOL, "$(P)SIM:VOLT_ON:SP")
     field(SDIS, "$(P)DISABLE")
+}
+
+record(longout, "$(P)SERVICE_REQUEST_ENABLE:SP")
+{
+    field(DESC, "Event status register enable")
+    field(DTYP, "stream")
+    field(VAL,  "0") # Enabled for HV on, ESB, I lim, I trip, V trip and Stable
+    field(PINI, "YES")
+    field(OUT,  "@devKeithley2290.proto set_service_request_enable $(PORT)")
+}
+
+record(longout, "$(P)EVENT_STATUS_REGISTER_ENABLE:SP")
+{
+    field(DESC, "Event status register enable")
+    field(DTYP, "stream")
+    field(VAL,  "16") # Enabled on execution error
+    field(PINI, "YES")
+    field(OUT,  "@devKeithley2290.proto set_event_status_enable $(PORT)")
 }
 
 ### SIMULATION RECORDS ###

@@ -14,13 +14,15 @@ dbLoadDatabase("dbd/Keithley2290Test.dbd",0,0)
 Keithley2290Test_registerRecordDeviceDriver(pdbbase)
 
 #The following commands are for a local serial line
-drvAsynSerialPortConfigure("L0","COM2",0,0,0)
+drvAsynSerialPortConfigure("L0","COM12",0,0,0)
 asynSetOption("L0", -1, "baud", "9600")
 asynSetOption("L0", -1, "bits", "8")
 asynSetOption("L0", -1, "parity", "none")
 asynSetOption("L0", -1, "stop", "1")
 asynSetOption("L0", -1, "clocal", "Y")
 asynSetOption("L0", -1, "crtscts", "N")
+asynSetOption("L0",0,"ixon","Y") 
+asynSetOption("L0",0,"ixoff","Y")
 asynOctetSetInputEos("L0", -1, "\n")
 asynOctetSetOutputEos("L0", -1, "\n")
 

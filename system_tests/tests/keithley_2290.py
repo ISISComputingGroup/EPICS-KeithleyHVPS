@@ -50,9 +50,18 @@ class Keithley2290DeviceTests(unittest.TestCase):
         self.ca.assert_setting_setpoint_sets_readback(volt_setpoint, "VOLT", expected_value=volt_setpoint, expected_alarm="NO_ALARM")
 
     @skip_if_recsim("Test does not work with mbbiDirect")
-    def test_WHEN_setting_volt_ON(self):
+    def test_WHEN_setting_volt_ON_while_enabled(self):
+        self._lewis.backdoor_set_on_device("high_voltage_enable_switch", 1)
         on = "ON"
         self.ca.assert_setting_setpoint_sets_readback(on, "VOLT_ON", expected_value=on, expected_alarm="NO_ALARM")
+        
+    @skip_if_recsim("Test does not work with mbbiDirect")
+    def test_WHEN_setting_volt_ON_while_disabled(self):
+        self._lewis.backdoor_set_on_device("high_voltage_enable_switch", 0)
+        self.ca.assert_setting_setpoint_sets_readback("ON", "VOLT_ON", expected_value="OFF", expected_alarm="NO_ALARM")
+        self.ca.assert_that_pv_is("EXECUTION_ERROR", 1)
+        self.ca.set_pv_value("EXECUTION_ERROR.PROC", 1) # Force processing to reset the fault condition
+        self.ca.assert_that_pv_is("EXECUTION_ERROR", 0)
         
     @skip_if_recsim("Test does not work with mbbiDirect")
     def test_WHEN_setting_volt_OFF(self):

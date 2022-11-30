@@ -82,6 +82,20 @@ get_error_status {
     in "%d";
 }
 
+# Get the execution error status
+get_execution_error {
+    ExtraInput = Ignore;
+    out "*ESR? 4";
+    in "%d";
+}
+
+# Get the command error status
+get_command_error {
+    ExtraInput = Ignore;
+    out "*ESR? 5";
+    in "%d";
+}
+
 # Get the status byte
 # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
 # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
@@ -94,6 +108,11 @@ get_error_status {
 get_status_byte {
     ExtraInput = Ignore;
     out "*STB?";
+    in "%d";
+}
+
+get_service_request_enable {
+    out "*SRE?";
     in "%d";
 }
 
@@ -137,6 +156,14 @@ set_curr_trip {
 
 set_volt_ON {
     out "%{HVOF|HVON}";
+}
+
+set_event_status_enable {
+    out "ESE %d";
+}
+
+set_service_request_enable {
+    out "*SRE %d";
 }
 
 # Sets the value of manual trip reset, 0 means manual and 1 means the trip reset mode is automatic

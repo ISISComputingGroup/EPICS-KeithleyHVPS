@@ -25,6 +25,9 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._curr_limit = 1.05E-6
         self._curr_trip = 1.05E-6
         self._trip_reset_mode = 0
+        self._high_voltage_enable_switch = 0
+        self._esb = 0
+        self._execution_error = 0
         # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
         # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
         # Bit 2 - I trip  - Indicates that a current trip has occurred.
@@ -60,6 +63,26 @@ class SimulatedKeithley2290(StateMachineDevice):
             self._volt = self.volt_limit
         else:
             self._volt = new_volt
+            
+    @property
+    def esb(self):
+        old_esb = self._esb
+        self._esb = 0 # Resing the register causes it to be cleared
+        return old_esb
+        
+    @property
+    def high_voltage_enable_switch(self):
+        return self._high_voltage_enable_switch
+        
+    @high_voltage_enable_switch.setter
+    def high_voltage_enable_switch(self, enable):
+        self._high_voltage_enable_switch = enable
+        
+    @property
+    def execution_error(self):
+        old_execution_error = self._execution_error
+        self._execution_error = 0 # Resing the register causes it to be cleared
+        return old_execution_error
         
     @property
     def volt_ON(self):
@@ -67,10 +90,16 @@ class SimulatedKeithley2290(StateMachineDevice):
         
     @volt_ON.setter
     def volt_ON(self, new_volt_ON):
+        if new_volt_ON and not self._high_voltage_enable_switch:
+            self._execution_error = 1
+            self._esb = 1
+            return
+            
         if new_volt_ON:
             self._stat_byte |= (1 << 7)
         else:
             self._stat_byte &= ~(1 << 7)
+        
         print("Status byte set to ", self._stat_byte)
         
     @property
