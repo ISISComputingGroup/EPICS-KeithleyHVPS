@@ -111,6 +111,29 @@ get_status_byte {
     in "%d";
 }
 
+get_stable_bit {
+    ExtraInput = Ignore;
+    out "*STB? 0";
+    in "%d";
+}
+get_esb_alert_bit {
+    ExtraInput = Ignore;
+    out "*STB? 5";
+    in "%d";
+}
+
+get_MSS_bit {
+    ExtraInput = Ignore;
+    out "*STB? 6";
+    in "%d";
+}
+
+get_volt_on_bit {
+    ExtraInput = Ignore;
+    out "*STB? 7";
+    in "%d";
+}
+
 get_service_request_enable {
     out "*SRE?";
     in "%d";

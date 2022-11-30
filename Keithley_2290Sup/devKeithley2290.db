@@ -157,18 +157,32 @@ record(mbbiDirect, "$(P)STATUS")
     field(NOBT, "8")
     field(INP,  "@devKeithley2290.proto get_status_byte $(PORT)")
     field(PINI, "YES")
-    field(SCAN, "1 second")
+    field(SCAN, "Event")
+    field(EVNT, "46") # same number as the enabled status byte register value
     field(SDIS, "$(P)DISABLE")
+}
+
+record(calcout, "$(P)STATUS_EVENT")
+{
+    field(INPA, "$(P)STATUS.B6 CP MS")
+    field(CALC, "A")
+    field(OEVT, "46") # same number as the enabled status byte register value
+    field(OOPT, "Transition To Non-zero")
+    field(ODLY, "0")
+    field(DOPT, "Use CALC")
 }
 
 # Get the Stable state
 record(bi, "$(P)VOLT_STABLE")
 {
     field(DESC, "Voltage Stable")
+    field(DTYP, "stream")
     field(ZNAM, "NO")
     field(ONAM, "STABLE")
     field(ZSV,  "MINOR")
-    field(INP,  "$(P)STATUS.B0 CP")
+    field(INP,  "@devKeithley2290.proto get_stable_bit $(PORT)")
+    field(SCAN, "1 second")
+    field(SDIS, "$(P)DISABLE")
 }
 
 # Get the voltage trip state
@@ -201,33 +215,58 @@ record(bi, "$(P)CURR_LIMITED")
     field(INP,  "$(P)STATUS.B3 CP MS")
 }
 
-# Get the value of the Standard Event Status Register alert
-record(bi, "$(P)ESB")
+# Get the Master Summary Status alert
+record(bi, "$(P)MSS")
 {
-    field(DESC, "Event Status Register alert")
-    field(ZNAM, "OK")
+    field(DESC, "MSS alert")
+    field(DTYP, "stream")
+    field(ZNAM, "OFF")
     field(ONAM, "ALERT")
-    field(OSV,  "MINOR")
-    field(INP,  "$(P)STATUS.B5 CP MS")
+    field(INP,  "@devKeithley2290.proto get_MSS_bit $(PORT)")
+    field(SCAN, "1 second")
+}
+
+record(calcout, "$(P)MSS_EVENT")
+{
+    field(INPA, "$(P)MSS CP MS")
+    field(CALC, "A")
+    field(OEVT, "46") # same number as the enabled status byte register value
+    field(OOPT, "Transition To Non-zero")
+    field(ODLY, "0")
+    field(DOPT, "Use CALC")
 }
 
 # Get the HV ON or OFF state
 record(bi, "$(P)VOLT_ON")
 {
     field(DESC, "HV ON or OFF")
+    field(DTYP, "stream")
     field(ZNAM, "OFF")
     field(ONAM, "ON")
-    field(INP,  "$(P)STATUS.B7 CP MS")
+    field(INP,  "@devKeithley2290.proto get_volt_on_bit $(PORT)")
+    field(SCAN, "1 second")
     field(SIML, "$(P)SIM")
-    field(SIOL, "$(P)SIM:VOLT_ON CP MS")
+    field(SIOL, "$(P)SIM:VOLT_ON")
     field(SDIS, "$(P)DISABLE")
+}
+
+# Get the value of the Standard Event Status Register alert
+record(bi, "$(P)ESB")
+{
+    field(DESC, "Event Status Register alert")
+    field(DTYP, "stream")
+    field(ZNAM, "OK")
+    field(ONAM, "ALERT")
+    field(OSV,  "MINOR")
+    field(INP,  "@devKeithley2290.proto get_esb_alert_bit $(PORT)")
+    field(SCAN, "1 second")
 }
 
 record(calcout, "$(P)ESB_EVENT")
 {
     field(INPA, "$(P)ESB CP MS")
     field(CALC, "A")
-    field(OEVT, "16") # same number as the enabled status register value
+    field(OEVT, "16") # same number as the enabled standard event status register value
     field(OOPT, "Transition To Non-zero")
     field(ODLY, "0")
     field(DOPT, "Use CALC")
@@ -242,7 +281,7 @@ record(bi, "$(P)EXECUTION_ERROR")
     field(ONAM, "ERROR")
     field(OSV,  "MAJOR")
     field(SCAN, "Event")
-    field(EVNT, "16")
+    field(EVNT, "16") # same number as the enabled standard event status register value
 }
 
 #######################################################
@@ -362,16 +401,16 @@ record(bo, "$(P)VOLT_ON:SP")
     field(SDIS, "$(P)DISABLE")
 }
 
-record(longout, "$(P)SERVICE_REQUEST_ENABLE:SP")
+record(longout, "$(P)SERVICE_REQUEST_ENABLE")
 {
     field(DESC, "Event status register enable")
     field(DTYP, "stream")
-    field(VAL,  "0") # Enabled for HV on, ESB, I lim, I trip, V trip and Stable
+    field(VAL,  "46") # Enabled for I lim, I trip, V trip and ESB
     field(PINI, "YES")
     field(OUT,  "@devKeithley2290.proto set_service_request_enable $(PORT)")
 }
 
-record(longout, "$(P)EVENT_STATUS_REGISTER_ENABLE:SP")
+record(longout, "$(P)EVENT_STATUS_REGISTER_ENABLE")
 {
     field(DESC, "Event status register enable")
     field(DTYP, "stream")

@@ -25,6 +25,11 @@ class Keithley2290StreamInterface(StreamInterface):
         CmdBuilder("get_setting_mode").escape("SMOD?").eos().build(),
         CmdBuilder("get_trip_reset_mode").escape("TMOD?").eos().build(),
         CmdBuilder("get_stat_byte").escape("*STB?").eos().build(),
+        CmdBuilder("get_execution_error").escape("*ESR? 4").eos().build(),
+        CmdBuilder("get_stable_bit").escape("*STB? 0").eos().build(),
+        CmdBuilder("get_esb_alert_bit").escape("*STB? 5").eos().build(),
+        CmdBuilder("get_MSS_bit").escape("*STB? 6").eos().build(),
+        CmdBuilder("get_volt_on_bit").escape("*STB? 7").eos().build(),
         # Error handling
         CmdBuilder("reset").escape("*RST").build(),
         CmdBuilder("clear_status").escape("*CLS").build(),
@@ -37,6 +42,8 @@ class Keithley2290StreamInterface(StreamInterface):
         CmdBuilder("set_volt_limit").escape("VLIM ").float().eos().build(),
         CmdBuilder("set_curr_limit").escape("ILIM ").float().escape("e").int().eos().build(),
         CmdBuilder("set_curr_trip").escape("ITRP ").float().escape("e").int().eos().build(),
+        CmdBuilder("set_service_request_enable").escape("*SRE ").int().eos().build(),
+        CmdBuilder("set_event_status_enable").escape("ESE ").int().eos().build(),
     }
 
     in_terminator = "\n"
@@ -86,6 +93,21 @@ class Keithley2290StreamInterface(StreamInterface):
     def get_volt_limit(self):
         return self._device.volt_limit
         
+    def get_execution_error(self):
+        return self._device.execution_error
+        
+    def get_stable_bit(self):
+        return self._device.stable_bit
+        
+    def get_esb_alert_bit(self):
+        return self._device.esb_alert_bit
+        
+    def get_MSS_bit(self):
+        return self._device.MSS_bit
+        
+    def get_volt_on_bit(self):
+        return self._device.volt_on_bit
+    
     def get_curr(self):
         return self._device.curr
         
@@ -109,6 +131,14 @@ class Keithley2290StreamInterface(StreamInterface):
         
     def get_stat_byte(self):
         return self._device.stat_byte
+        
+    def set_service_request_enable(self, new_SRE):
+        # only stubbed here
+        return
+        
+    def set_event_status_enable(self, new_ESE):
+        # only stubbed here
+        return
 
     @has_log
     def handle_error(self, request, error):
