@@ -47,21 +47,21 @@ get_volt_limit {
     in "%g";
 }
 
-# Returns the value of the actual output current (uA)
+# Returns the value of the actual output current (A)
 get_curr {
     ExtraInput = Ignore;
     out "IOUT?";
     in "%g";
 }
 
-# Returns the value of the current limit as a floating-point value (uA)
+# Returns the value of the current limit as a floating-point value (A)
 get_curr_limit {
     ExtraInput = Ignore;
     out "ILIM?";
     in "%g";
 }
 
-# Returns the value of the current trip as a floating-point value (uA)
+# Returns the value of the current trip as a floating-point value (A)
 get_curr_trip {
     ExtraInput = Ignore;
     out "ITRP?";
@@ -75,21 +75,22 @@ get_trip_reset_mode {
     in "%i";
 }
 
-# Get the error status
+# Get the program error status.
+# The most likely error number is 10 (excution error).
 get_error_status {
     ExtraInput = Ignore;
     out "LERR?";
     in "%d";
 }
 
-# Get the execution error status
+# Get the execution error status (0 or 1).
 get_execution_error {
     ExtraInput = Ignore;
     out "*ESR? 4";
     in "%d";
 }
 
-# Get the command error status
+# Get the command error status (0 or 1).
 get_command_error {
     ExtraInput = Ignore;
     out "*ESR? 5";
@@ -111,17 +112,21 @@ get_status_byte {
     in "%d";
 }
 
+# Stable means the requested voltage has been achieved.
 get_stable_bit {
     ExtraInput = Ignore;
     out "*STB? 0";
     in "%d";
 }
+
+# The ESB alert bit means that one of the selected trip or limit conditions is asserted.
 get_esb_alert_bit {
     ExtraInput = Ignore;
     out "*STB? 5";
     in "%d";
 }
 
+# Set if the output voltage is on as requested.
 get_volt_on_bit {
     ExtraInput = Ignore;
     out "*STB? 7";
@@ -146,7 +151,8 @@ reset {
 clear_status {
     out "*CLS";
 }
- 
+
+# Clears any voltage or current trip status
 clear_trip {
     out "TCLR";
 }
@@ -155,30 +161,39 @@ clear_trip {
 # Set functions
 #######################################################
 
+# Sets the requested voltage. Must be <= volt_limit, or an execution error will occur.
 set_volt {
     out "VSET %g";
 }
 
+# Sets the voltage limit. Will trip if the voltage is greater.
 set_volt_limit {
     out "VLIM %g";
 }
 
+# Sets the current limit value.
 set_curr_limit {
     out "ILIM %g";
 }
 
+# Sets the current trip value.
 set_curr_trip {
     out "ITRP %g";
 }
 
+# Requests the output voltage to be on.
 set_volt_ON {
     out "%{HVOF|HVON}";
 }
 
+# sets the Standard Event Status Enable Register bits.
+# The register isn't used further since the same information is available as the program error status.
 set_event_status_enable {
     out "ESE %d";
 }
 
+# Sets the Service Request Enable Register bits.
+# These are used to alert if a trip or limit condition ocurrs.
 set_service_request_enable {
     out "*SRE %d";
 }
