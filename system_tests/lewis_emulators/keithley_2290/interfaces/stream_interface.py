@@ -1,3 +1,17 @@
+##################################################
+#
+# Stream Simulator File
+#
+# Simulator file for Keithley 2290
+# ISIS, November 2022
+# Author : P.J. L. Heesterman (Capgemini Engineering)
+#
+# NOTES:
+#
+# 
+#
+##################################################
+
 from lewis.adapters.stream import StreamInterface, Cmd
 from lewis.core.logging import has_log
 from lewis.utils.command_builder import CmdBuilder
@@ -28,7 +42,6 @@ class Keithley2290StreamInterface(StreamInterface):
         CmdBuilder("get_execution_error").escape("*ESR? 4").eos().build(),
         CmdBuilder("get_stable_bit").escape("*STB? 0").eos().build(),
         CmdBuilder("get_esb_alert_bit").escape("*STB? 5").eos().build(),
-        CmdBuilder("get_MSS_bit").escape("*STB? 6").eos().build(),
         CmdBuilder("get_volt_on_bit").escape("*STB? 7").eos().build(),
         # Error handling
         CmdBuilder("reset").escape("*RST").build(),
@@ -40,8 +53,8 @@ class Keithley2290StreamInterface(StreamInterface):
         CmdBuilder("set_trip_reset_mode").escape("TMOD ").int().build(),
         CmdBuilder("set_volt").escape("VSET ").float().eos().build(),
         CmdBuilder("set_volt_limit").escape("VLIM ").float().eos().build(),
-        CmdBuilder("set_curr_limit").escape("ILIM ").float().escape("e").int().eos().build(),
-        CmdBuilder("set_curr_trip").escape("ITRP ").float().escape("e").int().eos().build(),
+        CmdBuilder("set_curr_limit").escape("ILIM ").float().eos().build(),
+        CmdBuilder("set_curr_trip").escape("ITRP ").float().eos().build(),
         CmdBuilder("set_service_request_enable").escape("*SRE ").int().eos().build(),
         CmdBuilder("set_event_status_enable").escape("ESE ").int().eos().build(),
     }
@@ -57,12 +70,21 @@ class Keithley2290StreamInterface(StreamInterface):
         return "*RST"
         
     def clear_status(self):
+        """
+        Clears status flags.
+        """
         self._device.clear_status()
     
     def get_error(self):
+        """
+        Gets any error status.
+        """
         return self._device.error
         
     def clear_trip(self):
+        """
+        Clears any trip status.
+        """
         self._device.trip = 0
 
     def get_idn(self):
@@ -75,11 +97,17 @@ class Keithley2290StreamInterface(StreamInterface):
         return self._device.setting_mode
 
     def set_volt_ON(self, value):
+        """
+        Sets volt ON or OFF.
+        """
         volt_ON = 0
         if value == "ON": volt_ON = 1
         self._device.volt_ON = volt_ON
 
     def set_volt(self, value):
+        """
+        Sets requested voltage.
+        """
         self._device.volt = value
         return "Voltage set to: " + str(value)
         
@@ -87,6 +115,9 @@ class Keithley2290StreamInterface(StreamInterface):
         return self._device.volt
         
     def set_volt_limit(self, value):
+        """
+        Sets requested voltage limit.
+        """
         self._device.volt_limit = value
         return "Voltage limit set to: " + str(value)
         
@@ -102,9 +133,6 @@ class Keithley2290StreamInterface(StreamInterface):
     def get_esb_alert_bit(self):
         return self._device.esb_alert_bit
         
-    def get_MSS_bit(self):
-        return self._device.MSS_bit
-        
     def get_volt_on_bit(self):
         return self._device.volt_on_bit
     
@@ -114,22 +142,31 @@ class Keithley2290StreamInterface(StreamInterface):
     def get_curr_limit(self):
         return self._device.curr_limit
 
-    def set_curr_limit(self, value, exponent):
-        self._device.curr_limit = value * 10**exponent
+    def set_curr_limit(self, value):
+        self._device.curr_limit = value
         
     def get_curr_trip(self):
         return self._device.curr_trip
 
-    def set_curr_trip(self, value, exponent):
-        self._device.curr_trip = value * 10**exponent
+    def set_curr_trip(self, value):
+        """
+        Sets the current trip value.
+        """
+        self._device.curr_trip = value
         
     def set_trip_reset_mode(self, new_mode):
+        """
+        Sets the trip reset mode.
+        """
         self._device.trip_reset_mode = new_mode
 
     def get_trip_reset_mode(self):
         return self._device.trip_reset_mode
         
     def get_stat_byte(self):
+        """
+        Gets the status byte value.
+        """
         return self._device.stat_byte
         
     def set_service_request_enable(self, new_SRE):

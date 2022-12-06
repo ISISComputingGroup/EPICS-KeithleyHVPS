@@ -122,12 +122,6 @@ get_esb_alert_bit {
     in "%d";
 }
 
-get_MSS_bit {
-    ExtraInput = Ignore;
-    out "*STB? 6";
-    in "%d";
-}
-
 get_volt_on_bit {
     ExtraInput = Ignore;
     out "*STB? 7";

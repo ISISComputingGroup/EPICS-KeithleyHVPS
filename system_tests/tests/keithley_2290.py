@@ -1,3 +1,17 @@
+##################################################
+#
+# Device Test File
+#
+# Test file for Keithley 2290
+# ISIS, November 2022
+# Author : P.J. L. Heesterman (Capgemini Engineering)
+#
+# NOTES:
+#
+# 
+#
+##################################################
+
 import time
 import unittest
 
@@ -67,7 +81,7 @@ class Keithley2290DeviceTests(unittest.TestCase):
         self.ca.assert_setting_setpoint_sets_readback(off, "VOLT_ON", expected_value=off, expected_alarm="NO_ALARM")
         
     def test_WHEN_setting_trip_reset_mode(self):
-        Automatic = "Automatic"
+        Automatic = "AUTO"
         self.ca.assert_setting_setpoint_sets_readback(Automatic, "TRIP_RESET_MODE", expected_value=Automatic, expected_alarm="NO_ALARM")
         
     @skip_if_recsim("no volt_limit side effect recsim")

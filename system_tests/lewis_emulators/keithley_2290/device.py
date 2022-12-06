@@ -1,3 +1,18 @@
+##################################################
+#
+# Device simulator File
+#
+# Simulator file for Keithley 2290
+# ISIS, November 2022
+# Author : P.J. L. Heesterman (Capgemini Engineering)
+#
+# NOTES:
+#
+# 
+#
+##################################################
+
+
 from collections import OrderedDict
 from lewis.core.logging import has_log
 from .states import DefaultState
@@ -22,10 +37,11 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._volt = 0.0
         self._volt_limit = 10000.0
         self._curr = 0.0
-        self._curr_limit = 1.05E-6
-        self._curr_trip = 1.05E-6
+        self._curr_limit = 1.05E-3
+        self._curr_trip = 1.05E-3
         self._trip_reset_mode = 0
         self._high_voltage_enable_switch = 1
+        self._error = 0
         self._execution_error = 0
         # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
         # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
@@ -61,7 +77,7 @@ class SimulatedKeithley2290(StateMachineDevice):
         if new_volt > self.volt_limit:
             self._volt = 0
             self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 6) # Set MSS bit
+            self._stat_byte |= (1 << 5) # Set ESB bit
         else:
             self._volt = new_volt
             
@@ -73,7 +89,6 @@ class SimulatedKeithley2290(StateMachineDevice):
     def esb_alert_bit(self):
         _esb_alert_bit = (self._stat_byte >> 5) & 1
         self._stat_byte &= ~(1 << 5) # Reading the register causes it to be cleared
-        print("_esb_alert_bit was ", _esb_alert_bit)
         return _esb_alert_bit
         
     @property
@@ -101,6 +116,12 @@ class SimulatedKeithley2290(StateMachineDevice):
         return old_execution_error
         
     @property
+    def error(self):
+        old_error = self._error
+        self._error = 0 # Reading the register causes it to be cleared
+        return old_error
+        
+    @property
     def volt_ON(self):
         return (self._stat_byte >> 7) & 1
         
@@ -108,16 +129,14 @@ class SimulatedKeithley2290(StateMachineDevice):
     def volt_ON(self, new_volt_ON):
         if new_volt_ON and not self._high_voltage_enable_switch:
             self._execution_error = 1
-            self._stat_byte |= (1 << 5) # Set ESB
-            print("Can't set volt_ON because the HV switch is OFF")
+            self._error = 10            # Execution error
+            self._stat_byte |= (1 << 6) # Set MSS bit
             return
             
         if new_volt_ON:
             self._stat_byte |= (1 << 7)
         else:
             self._stat_byte &= ~(1 << 7)
-        
-        print("Status byte set to ", self._stat_byte)
         
     @property
     def volt_limit(self):
@@ -129,13 +148,12 @@ class SimulatedKeithley2290(StateMachineDevice):
         if self._volt > self._volt_limit:
             self._volt = 0
             self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 6) # Set MSS bit
-        print("Volt limit set to ", self._volt_limit)
+            self._stat_byte |= (1 << 5) # Set ESB bit
     
     @property
     def curr(self):
         if (self._stat_byte & (1 << 3)) != 0:
-            self._stat_byte |= (1 << 6) # Set MSS bit
+            self._stat_byte |= (1 << 5) # Set ESB bit
             return self._curr_limit
         else:
             return self._curr
@@ -145,18 +163,17 @@ class SimulatedKeithley2290(StateMachineDevice):
         if new_curr > self._curr_trip:
             new_curr = 0
             self._stat_byte |= (1 << 2)
-            self._stat_byte |= (1 << 6) # Set MSS bit
-            print("Current is beyond trip")
+            self._stat_byte |= (1 << 5) # Set ESB bit
         else:
             self._stat_byte &= ~(1 << 2)
             
-        self._curr = new_curr
         if new_curr > self._curr_limit:
             self._stat_byte |= (1 << 3)
-            self._stat_byte |= (1 << 6) # Set MSS bit
+            self._stat_byte |= (1 << 5) # Set ESB bit
+            new_curr = self._curr_limit
         else:
             self._stat_byte &= ~(1 << 3)
-        print("Current set to ", self._curr)
+        self._curr = new_curr
         
     @property
     def curr_trip(self):
@@ -168,12 +185,10 @@ class SimulatedKeithley2290(StateMachineDevice):
         if self._curr > self._curr_trip:
             self._curr = 0
             self._stat_byte |= (1 << 2)
-            self._stat_byte |= (1 << 6) # Set MSS bit
+            self._stat_byte |= (1 << 5) # Set ESB bit
         else:
             self._stat_byte &= ~(1 << 2)
-        print("Current trip set to ", self._curr_trip)
-        
-        
+    
     @property
     def curr_limit(self):
         return self._curr_limit
@@ -183,9 +198,9 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._curr_limit = new_curr_limit
         if self._curr > self._curr_limit:
             self._stat_byte |= (1 << 3)
+            self._curr = new_curr_limit
         else:
             self._stat_byte &= ~(1 << 3)
-        print("Current limit set to ", self._curr_trip)
         
     @property
     def trip_reset_mode(self):
@@ -209,7 +224,6 @@ class SimulatedKeithley2290(StateMachineDevice):
             self._stat_byte |= 6
         else:
             self._stat_byte &= ~6
-        print("Trip set to ", self._stat_byte)
 
     def _get_state_handlers(self):
         """
