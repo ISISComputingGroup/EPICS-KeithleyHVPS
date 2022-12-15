@@ -85,7 +85,14 @@ class Keithley2290DeviceTests(unittest.TestCase):
         self.ca.assert_setting_setpoint_sets_readback(Automatic, "TRIP_RESET_MODE", expected_value=Automatic, expected_alarm="NO_ALARM")
         
     @skip_if_recsim("no volt_limit side effect recsim")
-    def test_WHEN_setting_volt_beyond_limit(self):
+    def test_WHEN_setting_volt_beyond_db_limit(self):
+        volt_limit = 10000.0
+        volt_setpoint = 11000.0
+        self.ca.assert_setting_setpoint_sets_readback(volt_limit, "VOLT_LIMIT", expected_value=volt_limit, expected_alarm="NO_ALARM")
+        self.ca.assert_setting_setpoint_sets_readback(volt_setpoint, "VOLT", expected_value=volt_limit, expected_alarm="NO_ALARM")
+
+    @skip_if_recsim("no volt_limit side effect recsim")
+    def test_WHEN_setting_volt_beyond_volt_limit(self):
         volt_limit = 4000.0
         volt_setpoint = 5000.0
         self.ca.assert_setting_setpoint_sets_readback(volt_limit, "VOLT_LIMIT", expected_value=volt_limit, expected_alarm="NO_ALARM")
