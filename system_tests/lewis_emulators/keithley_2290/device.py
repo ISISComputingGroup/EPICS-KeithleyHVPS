@@ -72,12 +72,22 @@ class SimulatedKeithley2290(StateMachineDevice):
     def volt(self):
         return self._volt
         
+    def volt_external(self, new_volt):
+        """ Used by Lewis backdoor """
+        if new_volt > self._volt_limit:
+            new_volt = 0
+            self._stat_byte |= (1 << 1)
+            self._stat_byte |= (1 << 5) # Set ESB bit
+        else:
+            self._stat_byte &= ~(1 << 1)
+            
+        self._volt = new_volt
+       
     @volt.setter
     def volt(self, new_volt):
         if new_volt > self.volt_limit:
-            self._volt = 0
-            self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 5) # Set ESB bit
+            self._execution_error = 1
+            self._error = 10
         else:
             self._volt = new_volt
             
@@ -144,11 +154,11 @@ class SimulatedKeithley2290(StateMachineDevice):
         
     @volt_limit.setter
     def volt_limit(self, new_volt_limit):
-        self._volt_limit = new_volt_limit
         if self._volt > self._volt_limit:
-            self._volt = 0
-            self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 5) # Set ESB bit
+            self._execution_error = 1
+            self._error = 10
+        else:
+            self._volt_limit = new_volt_limit
     
     @property
     def curr(self):
