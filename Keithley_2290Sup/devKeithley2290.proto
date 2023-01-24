@@ -38,6 +38,12 @@ get_volt {
     in "%g";
 }
 
+# HV ON readback, used only by the @init handler.
+get_volt_on {
+    out "*STB? 7";
+    in "%d";
+}
+
 # Returns the output voltage limit (V)
 get_volt_limit {
     out "VLIM?";
@@ -132,26 +138,31 @@ clear_trip {
 # Sets the requested voltage. Must be <= volt_limit, or an execution error will occur.
 set_volt {
     out "VSET %g";
+    @init { get_volt; }
 }
 
 # Sets the voltage limit. Will trip if the voltage is greater.
 set_volt_limit {
     out "VLIM %g";
+    @init { get_volt_limit; }
 }
 
 # Sets the current limit value.
 set_curr_limit {
     out "ILIM %g";
+    @init { get_curr_limit; }
 }
 
 # Sets the current trip value.
 set_curr_trip {
     out "ITRP %g";
+    @init { get_curr_trip; }
 }
 
 # Requests the output voltage to be on.
 set_volt_ON {
     out "%{HVOF|HVON}";
+    @init { get_volt_ON; }
 }
 
 # sets the Standard Event Status Enable Register bits.
@@ -169,6 +180,7 @@ set_service_request_enable {
 # Sets the value of manual trip reset, 0 means manual and 1 means the trip reset mode is automatic
 set_trip_reset_mode {
     out "TMOD %i";
+    @init { get_trip_reset_mode; }
 }
 
 #############################################################

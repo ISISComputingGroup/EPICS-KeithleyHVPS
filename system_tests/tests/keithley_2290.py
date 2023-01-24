@@ -121,8 +121,8 @@ class Keithley2290DeviceTests(unittest.TestCase):
         
     @skip_if_recsim("no backdoor in recsim")
     def test_WHEN_setting_curr_beyond_limit(self):
-        curr_limit = 1E-4
-        curr_actual = 1E-3
+        curr_limit = 100
+        curr_actual = 1000
         self.ca.assert_setting_setpoint_sets_readback(curr_limit, "CURR_LIMIT", expected_value=curr_limit, expected_alarm="NO_ALARM")
         self._lewis.backdoor_set_on_device("curr", curr_actual)
         self.ca.assert_that_pv_is("CURR", curr_limit)
@@ -130,8 +130,8 @@ class Keithley2290DeviceTests(unittest.TestCase):
         
     @skip_if_recsim("no backdoor in recsim")
     def test_WHEN_setting_curr_beyond_trip(self):
-        curr_trip = 1E-3
-        curr_actual = 2E-3
+        curr_trip = 1000
+        curr_actual = 2000
         self.ca.assert_setting_setpoint_sets_readback(curr_trip, "CURR_TRIP", expected_value=curr_trip, expected_alarm="NO_ALARM")
         self._lewis.backdoor_set_on_device("curr", curr_actual)
         self.ca.assert_that_pv_is("CURR", 0)

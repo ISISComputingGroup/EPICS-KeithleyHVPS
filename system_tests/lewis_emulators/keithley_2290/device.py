@@ -37,8 +37,8 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._volt = 0.0
         self._volt_limit = 10000.0
         self._curr = 0.0
-        self._curr_limit = 1.05E-3
-        self._curr_trip = 1.05E-3
+        self._curr_limit = 1050.0
+        self._curr_trip = 1050.0
         self._trip_reset_mode = 0
         self._high_voltage_enable_switch = 1
         self._error = 0
