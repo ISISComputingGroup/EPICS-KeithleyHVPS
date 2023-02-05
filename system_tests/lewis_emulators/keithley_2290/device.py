@@ -142,7 +142,6 @@ class SimulatedKeithley2290(StateMachineDevice):
             self._error = 10            # Execution error
             self._stat_byte |= (1 << 6) # Set MSS bit
             return
-            
         if new_volt_ON:
             self._stat_byte |= (1 << 7)
         else:

@@ -28,7 +28,7 @@ Terminator = "\n";
 # Read the device ID (only displays 39 chars)
 get_IDN {
     out "*IDN?";
-    in "KEITHLEY %*{INSTRUMENTS INC.,}%/(.{0,39})/";
+    in "KEITHLEY %*{INSTRUMENTS, }%/(.{0,39})/";
 }
 
 # Returns the actual output voltage (V).

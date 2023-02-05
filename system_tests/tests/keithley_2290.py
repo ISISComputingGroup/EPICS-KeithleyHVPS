@@ -67,7 +67,7 @@ class Keithley2290DeviceTests(unittest.TestCase):
         on = "ON"
         self.ca.set_pv_value("VOLT_ON:SP", on)
         self.ca.set_pv_value("STATUS.PROC", 1) # Force processing so we don't have to wait 1 second
-        self.ca.assert_that_pv_is("VOLT_ON:SP", on)
+        self.ca.assert_that_pv_is("VOLT_ON", on)
         
     @skip_if_recsim("no backdoor in recsim")
     def test_WHEN_setting_volt_ON_while_disabled(self):

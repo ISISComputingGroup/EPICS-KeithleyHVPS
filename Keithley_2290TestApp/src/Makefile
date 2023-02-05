@@ -21,7 +21,8 @@ Keithley2290Test_SRCS_DEFAULT += Keithley2290TestMain.cpp
 
 #add a definition for each support application used by this application
 #Keithley2290Test_LIBS += devKeithley2290
-Keithley2290Test_LIBS += asyn stream calc
+Keithley2290Test_LIBS += stream asyn pcre calc sscan
+Keithley2290Test_LIBS_WIN32 += oncrpc
 
 
 #NOTES:
