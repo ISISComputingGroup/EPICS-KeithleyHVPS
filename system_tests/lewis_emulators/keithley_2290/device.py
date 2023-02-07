@@ -32,8 +32,8 @@ class SimulatedKeithley2290(StateMachineDevice):
         """
         Initialize the device's attributes necessary for testing.
         """
-        # Device name 
-        self._idn = "KEITHLEY INSTRUMENTS, MODEL 2290-10 emulator"
+        # Device name - 39 chars max
+        self._idn = "KEITHLEY INSTRUMENTS INC., emulator"
         self._volt = 0.0
         self._volt_limit = 10000.0
         self._curr = 0.0
@@ -43,6 +43,7 @@ class SimulatedKeithley2290(StateMachineDevice):
         self._high_voltage_enable_switch = 1
         self._error = 0
         self._execution_error = 0
+        self.connected = True
         # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
         # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
         # Bit 2 - I trip  - Indicates that a current trip has occurred.

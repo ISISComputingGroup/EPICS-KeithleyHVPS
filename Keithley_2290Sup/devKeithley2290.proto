@@ -28,7 +28,7 @@ Terminator = "\n";
 # Read the device ID (only displays 39 chars)
 get_IDN {
     out "*IDN?";
-    in "KEITHLEY %*{INSTRUMENTS INC.,}%/(.{0,39})/";
+    in "%40c";
 }
 
 # Returns the actual output voltage (V).
@@ -39,7 +39,7 @@ get_volt {
 }
 
 # HV ON readback, used only by the @init handler.
-get_volt_on {
+get_volt_ON {
     out "*STB? 7";
     in "%d";
 }
