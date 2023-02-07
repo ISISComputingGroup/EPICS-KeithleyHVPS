@@ -32,17 +32,18 @@ class SimulatedKeithley2290(StateMachineDevice):
         """
         Initialize the device's attributes necessary for testing.
         """
-        # Device name 
-        self._idn = "KEITHLEY INSTRUMENTS, MODEL 2290-10 emulator"
+        # Device name - 39 chars max
+        self._idn = "KEITHLEY INSTRUMENTS INC., emulator"
         self._volt = 0.0
         self._volt_limit = 10000.0
         self._curr = 0.0
-        self._curr_limit = 1.05E-3
-        self._curr_trip = 1.05E-3
+        self._curr_limit = 1050.0 * 1e-6
+        self._curr_trip = 1050.0 * 1e-6
         self._trip_reset_mode = 0
         self._high_voltage_enable_switch = 1
         self._error = 0
         self._execution_error = 0
+        self.connected = True
         # Bit 0 - Stable  - Indicates that the VSET or ILIM value is stable.
         # Bit 1 - V trip  - Indicates that a voltage trip has occurred.
         # Bit 2 - I trip  - Indicates that a current trip has occurred.
@@ -72,12 +73,22 @@ class SimulatedKeithley2290(StateMachineDevice):
     def volt(self):
         return self._volt
         
+    def volt_external(self, new_volt):
+        """ Used by Lewis backdoor """
+        if new_volt > self._volt_limit:
+            new_volt = 0
+            self._stat_byte |= (1 << 1)
+            self._stat_byte |= (1 << 5) # Set ESB bit
+        else:
+            self._stat_byte &= ~(1 << 1)
+            
+        self._volt = new_volt
+       
     @volt.setter
     def volt(self, new_volt):
         if new_volt > self.volt_limit:
-            self._volt = 0
-            self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 5) # Set ESB bit
+            self._execution_error = 1
+            self._error = 10
         else:
             self._volt = new_volt
             
@@ -144,11 +155,11 @@ class SimulatedKeithley2290(StateMachineDevice):
         
     @volt_limit.setter
     def volt_limit(self, new_volt_limit):
-        self._volt_limit = new_volt_limit
         if self._volt > self._volt_limit:
-            self._volt = 0
-            self._stat_byte |= (1 << 1)
-            self._stat_byte |= (1 << 5) # Set ESB bit
+            self._execution_error = 1
+            self._error = 10
+        else:
+            self._volt_limit = new_volt_limit
     
     @property
     def curr(self):

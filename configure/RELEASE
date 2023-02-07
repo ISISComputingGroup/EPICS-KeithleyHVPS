@@ -5,10 +5,11 @@ CALC=$(SUPPORT)/calc/master
 SSCAN=$(SUPPORT)/sscan/master
 PCRE=$(SUPPORT)/pcre/master
 # END OF AUTO GENERATED DEPENDENCIES
+ONCRPC=$(SUPPORT)/oncrpc/master
+GTEST=$(SUPPORT)/googletest/master
 
 # optional extra local definitions here
 -include $(TOP)/configure/RELEASE.private
 
 include $(TOP)/../../../ISIS_CONFIG
 -include $(TOP)/../../../ISIS_CONFIG.$(EPICS_HOST_ARCH)
-GTEST=$(SUPPORT)/googletest/master

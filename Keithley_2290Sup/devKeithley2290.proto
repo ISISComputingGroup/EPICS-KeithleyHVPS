@@ -27,50 +27,49 @@ Terminator = "\n";
 
 # Read the device ID (only displays 39 chars)
 get_IDN {
-    ExtraInput = Ignore;
     out "*IDN?";
-    in "KEITHLEY %*{INSTRUMENTS INC.,}%/(.{0,39})/";
+    in "%40c";
 }
 
 # Returns the actual output voltage (V).
 # The value returned is a floating-point number and includes the + sign of the output voltage.
 get_volt {
-    ExtraInput = Ignore;
     out "VOUT?";
     in "%g";
 }
 
+# HV ON readback, used only by the @init handler.
+get_volt_ON {
+    out "*STB? 7";
+    in "%d";
+}
+
 # Returns the output voltage limit (V)
 get_volt_limit {
-    ExtraInput = Ignore;
     out "VLIM?";
     in "%g";
 }
 
 # Returns the value of the actual output current (A)
 get_curr {
-    ExtraInput = Ignore;
     out "IOUT?";
     in "%g";
 }
 
 # Returns the value of the current limit as a floating-point value (A)
 get_curr_limit {
-    ExtraInput = Ignore;
     out "ILIM?";
     in "%g";
 }
 
 # Returns the value of the current trip as a floating-point value (A)
 get_curr_trip {
-    ExtraInput = Ignore;
     out "ITRP?";
     in "%g";
 }
 
 # Returns the value of manual trip reset, 0 means manual and 1 means automatic
 get_trip_reset_mode {
-    ExtraInput = Ignore;
     out "TMOD?";
     in "%i";
 }
@@ -78,21 +77,18 @@ get_trip_reset_mode {
 # Get the program error status.
 # The most likely error number is 10 (excution error).
 get_error_status {
-    ExtraInput = Ignore;
     out "LERR?";
     in "%d";
 }
 
 # Get the execution error status (0 or 1).
 get_execution_error {
-    ExtraInput = Ignore;
     out "*ESR? 4";
     in "%d";
 }
 
 # Get the command error status (0 or 1).
 get_command_error {
-    ExtraInput = Ignore;
     out "*ESR? 5";
     in "%d";
 }
@@ -107,29 +103,7 @@ get_command_error {
 # Bit 6 - RQS/MSS - Request for Service/Master Summary Status.
 # Bit 7 - HV on   - Indicates that the high voltage is on.
 get_status_byte {
-    ExtraInput = Ignore;
     out "*STB?";
-    in "%d";
-}
-
-# Stable means the requested voltage has been achieved.
-get_stable_bit {
-    ExtraInput = Ignore;
-    out "*STB? 0";
-    in "%d";
-}
-
-# The ESB alert bit means that one of the selected trip or limit conditions is asserted.
-get_esb_alert_bit {
-    ExtraInput = Ignore;
-    out "*STB? 5";
-    in "%d";
-}
-
-# Set if the output voltage is on as requested.
-get_volt_on_bit {
-    ExtraInput = Ignore;
-    out "*STB? 7";
     in "%d";
 }
 
@@ -164,26 +138,31 @@ clear_trip {
 # Sets the requested voltage. Must be <= volt_limit, or an execution error will occur.
 set_volt {
     out "VSET %g";
+    @init { get_volt; }
 }
 
 # Sets the voltage limit. Will trip if the voltage is greater.
 set_volt_limit {
     out "VLIM %g";
+    @init { get_volt_limit; }
 }
 
 # Sets the current limit value.
 set_curr_limit {
     out "ILIM %g";
+    @init { get_curr_limit; }
 }
 
 # Sets the current trip value.
 set_curr_trip {
     out "ITRP %g";
+    @init { get_curr_trip; }
 }
 
 # Requests the output voltage to be on.
 set_volt_ON {
     out "%{HVOF|HVON}";
+    @init { get_volt_ON; }
 }
 
 # sets the Standard Event Status Enable Register bits.
@@ -200,8 +179,8 @@ set_service_request_enable {
 
 # Sets the value of manual trip reset, 0 means manual and 1 means the trip reset mode is automatic
 set_trip_reset_mode {
-    ExtraInput = Ignore;
     out "TMOD %i";
+    @init { get_trip_reset_mode; }
 }
 
 #############################################################
@@ -210,7 +189,6 @@ set_trip_reset_mode {
 
 # /// Use this send any command and get back the response (max 60 chars).
 gen {
-    ExtraInput = Ignore;
     out "%(\$1.VAL)s"; 
     in "%60c";
 }
