@@ -326,7 +326,7 @@ record(calcout, "$(P)INTERLOCK_TRIPPED_LATCHED")
     field(INPA, "$(P)INTERLOCK_TRIPPED_RAW")
     field(CALC, "A")
     field(DOPT, "Use CALC")
-    field(OOPT, "Transition To Non-zero")
+    field(OOPT, "Every Time")
     field(OUT, "$(P)INTERLOCK_TRIPPED.VAL PP")
 }
 
