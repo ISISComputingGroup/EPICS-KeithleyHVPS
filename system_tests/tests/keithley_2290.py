@@ -134,7 +134,7 @@ class Keithley2290DeviceTests(unittest.TestCase):
         curr_limit = 100
         curr_actual = 1000
         self.ca.assert_setting_setpoint_sets_readback(curr_limit, "CURR_LIMIT", expected_value=curr_limit, expected_alarm="NO_ALARM")
-        self._lewis.backdoor_set_on_device("curr", curr_actual)
+        self._lewis.backdoor_set_on_device("curr", curr_actual * 1e-6)
         self.ca.assert_that_pv_is("CURR", curr_limit)
         self.ca.assert_that_pv_is("CURR_LIMITED", "LIMITED")
         
@@ -143,7 +143,7 @@ class Keithley2290DeviceTests(unittest.TestCase):
         curr_trip = 1000
         curr_actual = 2000
         self.ca.assert_setting_setpoint_sets_readback(curr_trip, "CURR_TRIP", expected_value=curr_trip, expected_alarm="NO_ALARM")
-        self._lewis.backdoor_set_on_device("curr", curr_actual)
+        self._lewis.backdoor_set_on_device("curr", curr_actual * 1e-6)
         self.ca.assert_that_pv_is("CURR", 0)
         self.ca.assert_that_pv_alarm_is("CURR_TRIPPED", self.ca.Alarms.MAJOR)
         self.ca.set_pv_value("CLT", 1)
