@@ -8,7 +8,7 @@
 #
 # NOTES:
 #
-# 
+#
 #
 ##################################################
 
@@ -21,14 +21,15 @@ from lewis.utils.replies import conditional_reply
 class Mode(object):
     MODES = []
 
+
 class OutputMode(Mode):
     ON = "1"
     OFF = "0"
     MODES = [ON, OFF]
-    
+
+
 @has_log
 class Keithley2290StreamInterface(StreamInterface):
-
     # Commands that we expect via serial during normal operation
     commands = {
         # Readback values
@@ -70,21 +71,21 @@ class Keithley2290StreamInterface(StreamInterface):
         Resets the device.
         """
         self._device.reset()
-        
+
     @conditional_reply("connected")
     def clear_status(self):
         """
         Clears status flags.
         """
         self._device.clear_status()
-    
+
     @conditional_reply("connected")
     def get_error(self):
         """
         Gets any error status.
         """
         return self._device.error
-        
+
     @conditional_reply("connected")
     def clear_trip(self):
         """
@@ -109,7 +110,8 @@ class Keithley2290StreamInterface(StreamInterface):
         Sets volt ON or OFF.
         """
         volt_ON = 0
-        if value == "ON": volt_ON = 1
+        if value == "ON":
+            volt_ON = 1
         self._device.volt_ON = volt_ON
 
     @conditional_reply("connected")
@@ -119,11 +121,11 @@ class Keithley2290StreamInterface(StreamInterface):
         """
         self._device.volt = value
         return "Voltage set to: " + str(value)
-        
+
     @conditional_reply("connected")
     def get_volt(self):
         return self._device.volt
-        
+
     @conditional_reply("connected")
     def set_volt_limit(self, value):
         """
@@ -131,31 +133,31 @@ class Keithley2290StreamInterface(StreamInterface):
         """
         self._device.volt_limit = value
         return "Voltage limit set to: " + str(value)
-        
+
     @conditional_reply("connected")
     def get_volt_limit(self):
         return self._device.volt_limit
-        
+
     @conditional_reply("connected")
     def get_execution_error(self):
         return self._device.execution_error
-        
+
     @conditional_reply("connected")
     def get_stable_bit(self):
         return self._device.stable_bit
-        
+
     @conditional_reply("connected")
     def get_esb_alert_bit(self):
         return self._device.esb_alert_bit
-        
+
     @conditional_reply("connected")
     def get_volt_on_bit(self):
         return self._device.volt_on_bit
-    
+
     @conditional_reply("connected")
     def get_curr(self):
         return self._device.curr
-        
+
     @conditional_reply("connected")
     def get_curr_limit(self):
         return self._device.curr_limit
@@ -163,7 +165,7 @@ class Keithley2290StreamInterface(StreamInterface):
     @conditional_reply("connected")
     def set_curr_limit(self, value):
         self._device.curr_limit = value
-        
+
     @conditional_reply("connected")
     def get_curr_trip(self):
         return self._device.curr_trip
@@ -174,7 +176,7 @@ class Keithley2290StreamInterface(StreamInterface):
         Sets the current trip value.
         """
         self._device.curr_trip = value
-        
+
     @conditional_reply("connected")
     def set_trip_reset_mode(self, new_mode):
         """
@@ -185,19 +187,19 @@ class Keithley2290StreamInterface(StreamInterface):
     @conditional_reply("connected")
     def get_trip_reset_mode(self):
         return self._device.trip_reset_mode
-        
+
     @conditional_reply("connected")
     def get_stat_byte(self):
         """
         Gets the status byte value.
         """
         return self._device.stat_byte
-        
+
     @conditional_reply("connected")
     def set_service_request_enable(self, new_SRE):
         # only stubbed here
         return
-        
+
     @conditional_reply("connected")
     def set_event_status_enable(self, new_ESE):
         # only stubbed here
