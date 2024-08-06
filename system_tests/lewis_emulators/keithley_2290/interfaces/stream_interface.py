@@ -12,10 +12,11 @@
 #
 ##################################################
 
-from lewis.adapters.stream import StreamInterface, Cmd
+from lewis.adapters.stream import StreamInterface
 from lewis.core.logging import has_log
 from lewis.utils.command_builder import CmdBuilder
 from lewis.utils.replies import conditional_reply
+
 
 class Mode(object):
     MODES = []

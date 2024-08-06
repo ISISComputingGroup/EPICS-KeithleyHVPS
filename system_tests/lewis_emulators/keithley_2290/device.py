@@ -14,12 +14,11 @@
 
 
 from collections import OrderedDict
+
 from lewis.core.logging import has_log
-from .states import DefaultState
 from lewis.devices import StateMachineDevice
-from random import randint
-import time
-import threading
+
+from .states import DefaultState
 
 
 @has_log
