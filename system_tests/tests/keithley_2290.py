@@ -41,7 +41,7 @@ def _insert_reading(class_object, reading):
     time.sleep(0.5)  # for synchronicity help
 
 
-class Status(object):
+class Status:
     ON = "ON"
     OFF = "OFF"
 
@@ -107,9 +107,9 @@ class Keithley2290DeviceTests(unittest.TestCase):
         )
 
     def test_WHEN_setting_trip_reset_mode(self):
-        Automatic = "AUTO"
+        automatic = "AUTO"
         self.ca.assert_setting_setpoint_sets_readback(
-            Automatic, "TRIP_RESET_MODE", expected_value=Automatic, expected_alarm="NO_ALARM"
+            automatic, "TRIP_RESET_MODE", expected_value=automatic, expected_alarm="NO_ALARM"
         )
 
     @skip_if_recsim("no volt_limit side effect recsim")
@@ -145,10 +145,8 @@ class Keithley2290DeviceTests(unittest.TestCase):
         self.ca.assert_setting_setpoint_sets_readback(
             volt_setpoint, "VOLT", expected_value=0, expected_alarm="NO_ALARM"
         )
-        self.ca.set_pv_value("ERROR.PROC", 1)  # Force processing so we don't have to wait 1 second
         self.ca.assert_that_pv_alarm_is("EXECUTION_ERROR", self.ca.Alarms.MAJOR)
         self.ca.set_pv_value("EXECUTION_ERROR.PROC", 1)
-        self.ca.set_pv_value("STATUS.PROC", 1)  # Force processing so we don't have to wait 1 second
         self.ca.assert_that_pv_alarm_is("VOLT_TRIPPED", self.ca.Alarms.NONE)
 
     @skip_if_recsim("no backdoor in recsim")
